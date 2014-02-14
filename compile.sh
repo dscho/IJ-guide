@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ## TF 2012
 
 ### Paths and settings
