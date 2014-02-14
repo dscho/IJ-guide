@@ -17,6 +17,10 @@
   ## IJ version to appear in page titles
     EDITION="IJ 1.46r"
 
+### Try to find LyX
+    test -x $LYXPATH ||
+    LYXPATH="$(type -P lyx)" || { echo "  -->  lyx not found. Exiting..." >&2; exit 1;}
+
 ### Prompt for options
     echo "  $(date), Creating $EDITION guide:"
     read -p "  Create PDF editions? (y/n) " -n1 -r PDFREPLY
