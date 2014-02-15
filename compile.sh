@@ -104,6 +104,13 @@ quietly () {
         ## containing previously resized images using Resize_snapshots.ijm
         echo "  -->  Running elyxer. Please wait..."
         cd ./guide
+	# adjust relative paths
+	test "$LYXHTMLFILE" = "${LYXHTMLFILE#./}" ||
+	LYXHTMLFILE=".$LYXHTMLFILE"
+	test "$HTMLTEMPLATE" = "${HTMLTEMPLATE#./}" ||
+	HTMLTEMPLATE=".$HTMLTEMPLATE"
+	test "$HTMLTEMPLATETOC" = "${HTMLTEMPLATETOC#./}" ||
+	HTMLTEMPLATETOC=".$HTMLTEMPLATETOC"
         STEP=$(date +%s)
         quietly python $ELYXERPATH --noconvert --title "$EDITION" --template $HTMLTEMPLATE --css=css/guide.css --splitpart 1  $LYXHTMLFILE $HOMEPAGE
 
