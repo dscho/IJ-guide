@@ -28,6 +28,10 @@
     read -p "  Create HTML edition? (y/n) " -n1 -r HTMLREPLY
     echo ""
 
+quietly () {
+    output="$("$@" 2>&1 < /dev/null)" || { echo "$output" >&2; exit 1; }
+}
+
 ### Create PDF versions   
     START=$(date +%s)
     if [[ $PDFREPLY =~ ^[Yy]$ ]]
@@ -61,25 +65,25 @@
         cd ./tex
         STEP=$(date +%s)
         echo "  -->  Compiling main PDF. Please wait..."
-        pdflatex -interaction=nonstopmode -synctex=0 ./user-guide &>/dev/null
+        quietly pdflatex -interaction=nonstopmode -synctex=0 ./user-guide
         echo "  -->  Creating Bibliography..."
-        bibtex -terse user-guide.aux &>/dev/null
+        quietly bibtex -terse user-guide.aux
         echo "  -->  Making Index..."
-        makeindex -q user-guide &>/dev/null
+        quietly makeindex -q user-guide
         echo "  -->  Creating Nomenclature..."
-        makeindex -q user-guide.nlo -s nomencl.ist -o user-guide.nls &>/dev/null
+        quietly makeindex -q user-guide.nlo -s nomencl.ist -o user-guide.nls
         echo "  -->  $(( $(date +%s) - $STEP))s. Validating index, refs, bookmarks, etc. in 2 runs. Please wait..."
         STEP=$(date +%s)
-        pdflatex -interaction=nonstopmode -synctex=0 ./user-guide &>/dev/null
-        pdflatex -interaction=nonstopmode -synctex=0 ./user-guide &>/dev/null
+        quietly pdflatex -interaction=nonstopmode -synctex=0 ./user-guide
+        quietly pdflatex -interaction=nonstopmode -synctex=0 ./user-guide
 
         ### Compile booklets
         echo "  -->  $(( $(date +%s) - $STEP))s. Creating A4 Booklet. Please wait..."
         STEP=$(date +%s)
-        pdflatex user-guide-A4booklet &>/dev/null
+        quietly pdflatex user-guide-A4booklet
         echo "  -->  $(( $(date +%s) - $STEP))s. Creating US Booklet. Please wait..."
         STEP=$(date +%s)
-        pdflatex user-guide-USbooklet &>/dev/null
+        quietly pdflatex user-guide-USbooklet
 
         ### Cleanup aux files
         echo "  -->  $(( $(date +%s) - $STEP))s. Cleaning auxiliary files..."
@@ -99,12 +103,12 @@
         echo "  -->  Running elyxer. Please wait..."
         cd ./guide
         STEP=$(date +%s)
-        python $ELYXERPATH --noconvert --title "$EDITION" --template $HTMLTEMPLATE --css=css/guide.css --splitpart 1  $LYXHTMLFILE $HOMEPAGE > /dev/null 2>&1
+        quietly python $ELYXERPATH --noconvert --title "$EDITION" --template $HTMLTEMPLATE --css=css/guide.css --splitpart 1  $LYXHTMLFILE $HOMEPAGE
 
         ### Create the table of contents. The depth is specified in lyx
         echo "  -->  $(( $(date +%s) - $STEP))s. Creating HTML TOC. Please wait..."
         STEP=$(date +%s)
-        python $ELYXERPATH --template $HTMLTEMPLATETOC --css=css/tocmenu.css --nofooter --notoclabels --tocfor $HOMEPAGE --target="_top" --splitpart 1 --title "Table of Contents" $LYXHTMLFILE toc.html > /dev/null 2>&1
+        quietly python $ELYXERPATH --template $HTMLTEMPLATETOC --css=css/tocmenu.css --nofooter --notoclabels --tocfor $HOMEPAGE --target="_top" --splitpart 1 --title "Table of Contents" $LYXHTMLFILE toc.html
 
         ## duplicate homepage as index.html
         echo "  -->  $(( $(date +%s) - $STEP))s. Creating index.html..."
