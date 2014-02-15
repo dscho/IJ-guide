@@ -98,6 +98,8 @@ quietly () {
 ### Create HTML version
     if [[ $HTMLREPLY =~ ^[Yy]$ ]]
     then
+        test -x $ELYXERPATH ||
+        ELYXERPATH="$(type -P elyxer)" || { echo "  -->  elyxer not found. Exiting..." >&2; exit 1;}
         ## We'll cd to the output directory. elyxer will read image dimensions from the images/ subfolder
         ## containing previously resized images using Resize_snapshots.ijm
         echo "  -->  Running elyxer. Please wait..."
