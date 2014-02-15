@@ -26,3 +26,5 @@ Thumbs.db
 /guide/images/*/*.png
 /guide/*.pdf
 /tex/*.tex
+/geometry/
+/tex/geometry.sty

@@ -47,6 +47,24 @@ quietly () {
         else
             echo "  -->  Running LyX2TeX. Please wait..."
             `$LYXPATH --force-overwrite --export pdflatex ./lyx/user-guide.lyx &>/dev/null`
+
+            ### Work around obsolete 'geometry' package on Ubuntu
+            if grep -q '2008/12/21 v4.2 Page Geometry' \
+                /usr/share/texmf-texlive/tex/latex/geometry/geometry.sty
+            then
+                test -f tex/geometry.sty || {
+                    echo "  -->  Installing newer geometry package. Please wait..."
+                    test -d geometry || {
+                        test -f geometry.zip ||
+                        quietly curl -L -O http://mirrors.ctan.org/macros/latex/contrib/geometry.zip
+                        quietly unzip geometry.zip
+                    }
+                    test -f geomtry/geometry.sty ||
+                    (cd geometry &&
+                     quietly tex geometry.dtx)
+                    cp geometry/geometry.sty tex/
+                }
+            fi
         fi
 
         ### Clean lyx temporary files
